@@ -17,10 +17,11 @@ Start:
 
 	lda #0
 	ldx #$FF
+	sta $FF
 
 MemLoop:
-	sta $0,X
 	dex
+	sta $0,X
 	bne MemLoop
 
 	;; Fill ROM size to 4KB
