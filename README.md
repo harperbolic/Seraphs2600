@@ -1,2 +1,2 @@
 # AtaGame
-Atari 2600 game made using Assembly 6502
+Atari 2600 game made with Assembly 6502
