@@ -4,7 +4,7 @@
 	org $F000
 
 
-	;; Adequates assembly 6502 to the 6507 architecture ;;
+	;; Adequate assembly 6502 to the 6507 architecture ;;
 	
 Start:
 	sei			;Disable interrupts
