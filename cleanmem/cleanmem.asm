@@ -7,8 +7,8 @@
 	;; Adequate assembly 6502 to the 6507 architecture ;;
 	
 Start:
-	sei			;Disable interrupts
-	cld			;Disable BCD decimal math mode
+	sei			; Disable interrupts
+	cld			; Disable BCD decimal math mode
 	ldx #$FF
 	txs
 
