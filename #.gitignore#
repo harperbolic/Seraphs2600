@@ -1,0 +1,3 @@
+machines/
+*.bin
+vcs.h/
