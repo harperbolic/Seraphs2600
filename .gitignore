@@ -1,3 +1,4 @@
 dasm
 machines/
 *.bin
+vcs.h/
