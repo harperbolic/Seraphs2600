@@ -1,4 +1,3 @@
-dasm
+dasm/
 machines/
 *.bin
-vcs.h/
