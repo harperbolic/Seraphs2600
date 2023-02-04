@@ -1,3 +1,5 @@
 *.h
 machines/
 *.bin
+*.lst
+*.sym
