@@ -3,3 +3,4 @@ machines/
 *.bin
 *.lst
 *.sym
+Makefile
