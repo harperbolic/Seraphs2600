@@ -3,6 +3,14 @@
 	include "vcs.h"
 	include "macro.h"
 
+	;; start unitialized variable segment at $80
+	seg.u Variables
+	org $80
+P0Height ds 1			; one byte for P0Height
+P1Height ds 1
+
+
+	;; start ROM code segment
 	seg code
 	org $F000
 
@@ -15,6 +23,10 @@ Reset:
 	lda #%1111
 	sta COLUPF
 
+	lda #10
+	sta P0Height
+	sta P1Height
+	
 	;; set TIA registers
 	lda #$48
 	sta COLUP0
@@ -77,7 +89,7 @@ LoopP0:
 	sta GRP0
 	sta WSYNC
 	iny
-	cpy #10
+	cpy P0Height
 	bne LoopP0
 
 	lda #0
@@ -90,7 +102,7 @@ LoopP1:
 	sta GRP1
 	sta WSYNC
 	iny
-	cpy #10
+	cpy P1Height
 	bne LoopP1
 
 	lda #0
