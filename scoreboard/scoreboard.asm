@@ -22,6 +22,9 @@ Reset:
 	lda #$C6
 	sta COLUP1
 
+	ldy #2
+	sty CTRLPF
+
 	;; turn VBLANK, VSYNC on
 StartFrame:
 	lda #2
@@ -42,10 +45,6 @@ StartFrame:
 	REPEND
 	lda #0
 	sta VBLANK
-
-	;; set CTRLPF for playfield reflection
-	ldx #1
-	stx CTRLPF
 
 	;; 192 visible scanlines
 	REPEAT 10
