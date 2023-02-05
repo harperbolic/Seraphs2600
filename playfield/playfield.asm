@@ -61,10 +61,11 @@ StartFrame:
 	REPEND
 
 	;; set PF(0-2), display 164 scanlines
-	ldx #%00100000
+	ldx #%01100000
 	stx PF0
 	ldx #0
 	stx PF1
+	ldx #%10000000
 	stx PF2
 	REPEAT 164
 		sta WSYNC
