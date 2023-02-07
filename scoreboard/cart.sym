@@ -8,10 +8,10 @@ AUDF1                    0018
 AUDV0                    0019                  
 AUDV1                    001a                  
 COLUBK                   0009              (R )
-COLUP0                   0006              (R )
-COLUP1                   0007              (R )
+COLUP0                   0006                  
+COLUP1                   0007                  
 COLUPF                   0008              (R )
-CTRLPF                   000a              (R )
+CTRLPF                   000a                  
 CXBLPF                   0006                  
 CXCLR                    002c                  
 CXM0FB                   0004                  
@@ -40,19 +40,19 @@ INPT3                    000b
 INPT4                    000c                  
 INPT5                    000d                  
 INTIM                    0284                  
-LoopP0                   f10e              (R )
-LoopP1                   f120              (R )
-LoopScoreboard           f098              (R )
+LoopP0                   f104              (R )
+LoopP1                   f116              (R )
+LoopScoreboard           f08e              (R )
 NO_ILLEGAL_OPCODES       0000 ????         (R )
 NumberBitmap             fff2              (R )
 NUSIZ0                   0004                  
 NUSIZ1                   0005                  
 P0Height                 0080              (R )
-P1Height                 0081              (R )
 PF0                      000d                  
 PF1                      000e              (R )
 PF2                      000f                  
 PlayerBitmap             ffe8              (R )
+PlayerYPos               0081              (R )
 REFP0                    000b                  
 REFP1                    000c                  
 RESBL                    0014                  
@@ -64,7 +64,7 @@ RESMP1                   0029
 RESP0                    0010                  
 RESP1                    0011                  
 RSYNC                    0003                  
-StartFrame               f024              (R )
+StartFrame               f01a              (R )
 SWACNT                   0281                  
 SWBCNT                   0283                  
 SWCHA                    0280                  

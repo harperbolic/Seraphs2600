@@ -1,19 +1,25 @@
 	processor 6502
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; include macros and register alias
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	include "vcs.h"
 	include "macro.h"
 
-	;; start unitialized variable segment at $80
-	seg.u Variables
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; var declaration segment
+;; $80 up to $FF
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	seg.u var
 	org $80
-P0Height ds 1			; one byte for P0Height
-P1Height ds 1
+P0Height byte			; one byte for P0Height
+PlayerYPos byte
 
-
-	;; start ROM code segment
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; start ROM code at $F000
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	seg code
 	org $F000
-
 Reset:
 	CLEAN_START
 
@@ -22,49 +28,51 @@ Reset:
 
 	lda #%1111
 	sta COLUPF
-
-	lda #10
-	sta P0Height
-	sta P1Height
 	
-	;; set TIA registers
-	lda #$48
-	sta COLUP0
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; initialize vars
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-	lda #$C6
-	sta COLUP1
+	lda #180
+	sta PlayerYPos
 
-	ldy #2
-	sty CTRLPF
+	lda #9
+	sta P0Height
 
-	;; turn VBLANK, VSYNC on
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; sets VBLANK and VSYNC
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 StartFrame:
 	lda #2
 	sta VBLANK
-	STA VSYNC
+	sta VSYNC
 
-
-	;; 3 VSYNC scanlines
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; display 3 VSYNC lines
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	REPEAT 3
 		sta WSYNC 
 	REPEND
 	lda #0
 	sta VSYNC
 
-	;; 27 VBLANK scanlines
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; display 37 VBLANK lines
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	REPEAT 37
 		sta WSYNC
 	REPEND
+	
 	lda #0
 	sta VBLANK
 
-	;; 192 visible scanlines
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; display 192 visible scanlines
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	REPEAT 10
 		sta WSYNC
 	REPEND
 
-	;; 10 scoreboard number scanlines
-	;; data from array
 	ldy #0
 LoopScoreboard:
 	lda NumberBitmap,Y
@@ -76,13 +84,10 @@ LoopScoreboard:
 
 	lda #0
 	sta PF1
-
-	;; 50 empty scanlines
 	REPEAT 50
 		sta WSYNC
 	REPEND
-
-	;; 10 P0 scanlines
+	
 	ldy #0
 LoopP0:	
 	lda PlayerBitmap,Y
@@ -98,11 +103,12 @@ LoopP0:
 	;; 10 P1 scanlines
 	ldy #0
 LoopP1:
+	;; 
 	lda PlayerBitmap,Y
 	sta GRP1
 	sta WSYNC
 	iny
-	cpy P1Height
+	cpy P0Height
 	bne LoopP1
 
 	lda #0
@@ -114,7 +120,9 @@ LoopP1:
 		sta WSYNC
 	REPEND
 	
-	;; 30 VBLANK oversan scanlines
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; output 30 VBLANK overscan lines
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	lda #2
 	sta VBLANK
 	REPEAT 30
