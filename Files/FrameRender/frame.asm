@@ -125,16 +125,16 @@ P0Bitmap:
 	.byte #%01111110	;-000000-
 
 P0Color:
-	.byte #$00
-	.byte #$40
-	.byte #$40
-	.byte #$40
-	.byte #$40
-	.byte #$42
-	.byte #$42
-	.byte #$42
-	.byte #$44
-	.byte #$D2
+	.byte #$06
+	.byte #$06
+	.byte #$06
+	.byte #$06
+	.byte #$06
+	.byte #$06
+	.byte #$06
+	.byte #$06
+	.byte #$06
+	.byte #$06
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; complete ROM size
