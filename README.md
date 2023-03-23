@@ -5,3 +5,5 @@ To assemble, use  the dasm assembler.
 
 NTSC Only.
 PAL (WIP).
+
+OwO
