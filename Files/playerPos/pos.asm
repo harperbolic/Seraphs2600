@@ -63,10 +63,11 @@ StartFrame:
 	lda P0XPos
 	and #$7F
 
+	sec
+	
 	sta WSYNC
 	sta HMCLR
 
-	sec
 DivideLoop:
 	sbc #15
 	bcs DivideLoop
