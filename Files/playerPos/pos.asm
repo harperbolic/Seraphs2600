@@ -37,7 +37,7 @@ Reset:
 	lda #11
 	sta P0Height
 
-	lda #50
+	lda #00
 	sta P0XPos
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -81,7 +81,7 @@ DivideLoop:
 	sta WSYNC
 	sta HMOVE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; display 37-2 VBLANK lines
+;; display 37-2 VBLANK scanlines
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	REPEAT 35
 		sta WSYNC
@@ -127,7 +127,7 @@ LoadBitmap:
 	LDA #0
 	sta VBLANK
 
-;; Decrease PlayerXPos
+;; Change PlayerPos
 	
 	dec PlayerYPos
 	inc P0XPos
