@@ -1,4 +1,4 @@
-	processor 6502
+ 	processor 6502
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; include macros and register alias
@@ -14,6 +14,7 @@
 	org $80
 P0Height byte			; one byte for P0Height
 PlayerYPos byte
+P0XPos	byte	
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; start ROM code at $F000
@@ -35,6 +36,10 @@ Reset:
 
 	lda #11
 	sta P0Height
+
+	lda #50
+	sta P0XPos
+	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; start frame - set VBLANK and VSYNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -53,15 +58,38 @@ StartFrame:
 	sta VSYNC
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; display 37 VBLANK lines
+;; Set P0 horizontal Pos
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	REPEAT 37
+	lda P0XPos
+	and #$7F
+
+	sta WSYNC
+	sta HMCLR
+
+	sec
+DivideLoop:
+	sbc #15
+	bcs DivideLoop
+
+	eor #%00000111
+	asl
+	asl
+	asl
+	asl
+	sta HMP0
+	sta RESP0	
+	sta WSYNC
+	sta HMOVE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; display 37-2 VBLANK lines
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	REPEAT 35
 		sta WSYNC
 	REPEND
-	
+
 	lda #0
 	sta VBLANK
-d
+	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; display 192 visible scanlines
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -102,6 +130,7 @@ LoadBitmap:
 ;; Decrease PlayerXPos
 	
 	dec PlayerYPos
+	inc P0XPos
 
 ;; New frame
 	
