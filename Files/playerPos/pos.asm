@@ -51,7 +51,7 @@ StartFrame:
 	REPEND
 	lda #0
 	sta VSYNC
-
+	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; display 37 VBLANK lines
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -61,7 +61,7 @@ StartFrame:
 	
 	lda #0
 	sta VBLANK
-
+d
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; display 192 visible scanlines
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -102,6 +102,8 @@ LoadBitmap:
 ;; Decrease PlayerXPos
 	
 	dec PlayerYPos
+
+;; New frame
 	
 	jmp StartFrame
 
