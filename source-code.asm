@@ -1,24 +1,20 @@
  	processor 6502
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; include macros and register alias
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; include alias
+	
 	include "vcs.h"
 	include "macro.h"
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; var declaration segment
-;; $80 up to $FF
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; var $80 - $FF
+
 	seg.u var
 	org $80
 P0Height byte			; one byte for P0Height
-PlayerYPos byte
+P0YPos byte
 P0XPos	byte	
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; start ROM code at $F000
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; init ROM at $F000
+
 	seg code
 	org $F000
 Reset:
@@ -27,12 +23,10 @@ Reset:
 	ldx #$80
 	stx COLUBK
 	
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; initialize vars
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; init vars
 
 	lda #180
-	sta PlayerYPos
+	sta P0YPos
 
 	lda #11
 	sta P0Height
@@ -40,26 +34,23 @@ Reset:
 	lda #00
 	sta P0XPos
 	
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; start frame - set VBLANK and VSYNC
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; enable VBLANK and VSYNC
+
 StartFrame:
 	lda #2
 	sta VBLANK
 	sta VSYNC
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; display 3 VSYNC lines
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; VSYNC
+
 	REPEAT 3
 		sta WSYNC 
 	REPEND
 	lda #0
 	sta VSYNC
 	
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Set P0 horizontal Pos
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; Set P0XPos
+
 	lda P0XPos
 	and #$7F
 
@@ -81,9 +72,9 @@ DivideLoop:
 	sta RESP0	
 	sta WSYNC
 	sta HMOVE
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; display 37-2 VBLANK scanlines
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+	;; VBLANK
+	
 	REPEAT 35
 		sta WSYNC
 	REPEND
@@ -91,15 +82,14 @@ DivideLoop:
 	lda #0
 	sta VBLANK
 	
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; display 192 visible scanlines
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; visible scanlines
+
 	ldx #192
 
 Scanline:
 	txa
 	sec
-	sbc PlayerYPos
+	sbc P0YPos
 	cmp P0Height
 	bcc LoadBitmap
 	lda #0
@@ -117,9 +107,8 @@ LoadBitmap:
 	dex
 	bne Scanline
 	
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; output 30 VBLANK overscan lines
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; VBLANK overscan
+
 	lda #2
 	sta VBLANK
 	REPEAT 30
@@ -128,12 +117,12 @@ LoadBitmap:
 	LDA #0
 	sta VBLANK
 
-;; Change PlayerPos
+	;; decrease P0Pos
 	
-	dec PlayerYPos
+	dec P0YPos
 	inc P0XPos
 
-;; New frame
+	;; New frame
 	
 	jmp StartFrame
 
