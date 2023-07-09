@@ -1,20 +1,24 @@
-	processor 6502
+ 	processor 6502
 
-	;; include alias
-	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; include macros and register alias
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	include "vcs.h"
 	include "macro.h"
 
-	;; vars, $80-$FF
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; var declaration segment
+;; $80 up to $FF
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	seg.u var
 	org $80
-P0Height byte
-P0YPos byte
-P0XPos byte
+P0Height byte			; one byte for P0Height
+PlayerYPos byte
+P0XPos	byte	
 
-	;; Rom init at $F000
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; start ROM code at $F000
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	seg code
 	org $F000
 Reset:
@@ -22,42 +26,45 @@ Reset:
 
 	ldx #$80
 	stx COLUBK
-
-	;; init vars
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; initialize vars
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 	lda #180
-	sta P0YPos
+	sta PlayerYPos
 
 	lda #11
 	sta P0Height
 
 	lda #00
 	sta P0XPos
-
-	;; Frame start
-	;; Vblank and Vsync
-
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; start frame - set VBLANK and VSYNC
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 StartFrame:
 	lda #2
 	sta VBLANK
 	sta VSYNC
 
-	;; Vsync
-
-	sta WSYNC
-	sta WSYNC
-	sta WSYNC
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; display 3 VSYNC lines
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	REPEAT 3
+		sta WSYNC 
+	REPEND
 	lda #0
 	sta VSYNC
-
-	;; set P0XPos
-
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Set P0 horizontal Pos
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	lda P0XPos
 	and #$7F
 
 	sec
-
+	
 	sta WSYNC
 	sta HMCLR
 
@@ -71,80 +78,92 @@ DivideLoop:
 	asl
 	asl
 	sta HMP0
-	sta RESP0
+	sta RESP0	
 	sta WSYNC
-	sta HMODE
+	sta HMOVE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; display 37-2 VBLANK scanlines
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	REPEAT 35
+		sta WSYNC
+	REPEND
 
-	;; VBLANK
-
+	lda #0
+	sta VBLANK
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; display 192 visible scanlines
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	ldx #192
 
 Scanline:
 	txa
 	sec
-	sbc P0YPos
-	cpm P0Height
+	sbc PlayerYPos
 	cmp P0Height
 	bcc LoadBitmap
 	lda #0
 
 LoadBitmap:
 	tay
-	lda p0Bitmap,Y
+	lda P0Bitmap,Y
 	sta GRP0
 
 	lda P0Color,Y
 	sta COLUP0
 
 	sta WSYNC
-
+	
 	dex
 	bne Scanline
-
-	;; Vblank overscan
-
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; output 30 VBLANK overscan lines
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	lda #2
 	sta VBLANK
-
 	REPEAT 30
-	sta WSYNC
+		sta WSYNC
 	REPEND
+	LDA #0
+	sta VBLANK
 
-	lda #0
-	sta VLANK
-
-	;; P0Pos
-
-	dec P0YPos
+;; Change PlayerPos
+	
+	dec PlayerYPos
 	inc P0XPos
 
-	;; New frame
-
+;; New frame
+	
 	jmp StartFrame
 
-
-
-	;; bitmaps arrays
-
+	;; player numberarray
 	org $FFE7
-
 P0Bitmap:
 	.byte #%00000000
-	.byte #%01111110
-	.byte #%00111110
-	.byte #%00111100
-	.byte #%00111100
-	.byte #%00011000
-	.byte #%01111110
-	.byte #%10111101
-	.byte #%00011000
-	.byte #%00100000
+	.byte #%01111110	;---0----
+	.byte #%00111110	;---00---
+	.byte #%00111100	;0-0000-0
+	.byte #%00111100	;-000000-
+	.byte #%00111100	;---00---
+	.byte #%00011000	;--0000--
+	.byte #%01111110	;--0000--
+	.byte #%10111101	;--0000--
+	.byte #%00011000	;--00000-
+	.byte #%00100000	;-000000-
 
 P0Color:
-	REPEAT 9
 	.byte #0
-	REPEND
-
+	.byte #0
+	.byte #0
+	.byte #0
+	.byte #0
+	.byte #0
+	.byte #0
+	.byte #0
+	.byte #0
+	.byte #0
+	
 	org $FFFC
 	.word Reset
 	.word Reset
