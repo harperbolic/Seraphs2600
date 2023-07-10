@@ -10,8 +10,7 @@
 	seg.u var
 	org $80
 P0Height byte			; one byte for P0Height
-P0YPos byte
-P0XPos	byte	
+P0XPos	byte
 
 	;; init ROM at $F000
 
@@ -24,14 +23,11 @@ Reset:
 	stx COLUBK
 	
 	;; init vars
-
-	lda #180
-	sta P0YPos
-
+	
 	lda #11
 	sta P0Height
 
-	lda #00
+	lda #10
 	sta P0XPos
 	
 	;; enable VBLANK and VSYNC
@@ -54,10 +50,10 @@ StartFrame:
 	lda P0XPos
 	and #$7F
 
-	sec
-	
 	sta WSYNC
-	sta HMCLR
+	sta HMCRL
+	
+	sec
 
 DivideLoop:
 	sbc #15
