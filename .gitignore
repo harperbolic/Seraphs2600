@@ -1,8 +1,6 @@
 *
 !.gitignore
 !README.md
-!seraphs.bin
 !source-code.asm
-!seraphs.sym
-!seraphs.lst
-!game-files/
+!game-files
+!cart.*
