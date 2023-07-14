@@ -2,5 +2,5 @@
 !.gitignore
 !README.md
 !source-code.asm
-!game-files
-!cart.*
+!game-files/
+!seraphs.*
