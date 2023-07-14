@@ -11,6 +11,7 @@
 	org $80
 P0Height byte			; one byte for P0Height
 P0XPos	byte
+P0YPos byte	
 
 	;; init ROM at $F000
 
@@ -51,7 +52,7 @@ StartFrame:
 	and #$7F
 
 	sta WSYNC
-	sta HMCRL
+	sta HMCLR
 	
 	sec
 
@@ -113,11 +114,38 @@ LoadBitmap:
 	LDA #0
 	sta VBLANK
 
-	;; decrease P0Pos
-	
-	dec P0YPos
-	inc P0XPos
+	;; joystick inputs tests
 
+CheckP0Up:
+	lda #%00010000
+	bit SWCHA
+	bne CheckP0Down
+
+	inc P0YPos
+	
+CheckP0Down:
+	lda #%00100000
+	bit SWCHA
+	bne CheckP0Left
+
+	dec P0YPos
+	
+CheckP0Left:
+	lda #%01000000
+	bit SWCHA
+	bne CheckP0Right
+
+	dec P0XPos
+	
+CheckP0Right:
+	lda #%10000000
+	bit SWCHA
+	bne NullInput
+
+	inc P0XPos
+	
+NullInput:
+	
 	;; New frame
 	
 	jmp StartFrame
