@@ -55,12 +55,11 @@ StartFrame:
 	sta HMCLR
 	
 	sec
-
 DivideLoop:
 	sbc #15
 	bcs DivideLoop
 
-	eor #%00000111
+	eor #7
 	asl
 	asl
 	asl
