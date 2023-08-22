@@ -9,9 +9,8 @@
 
 	seg.u var
 	org $80
-P0Height byte			; one byte for P0Height
 P0XPos	byte
-P0YPos byte	
+	
 
 	;; init ROM at $F000
 
@@ -24,9 +23,6 @@ Reset:
 	stx COLUBK
 	
 	;; init vars
-	
-	lda #11
-	sta P0Height
 
 	lda #10
 	sta P0XPos
@@ -55,6 +51,7 @@ StartFrame:
 	sta HMCLR
 	
 	sec
+
 DivideLoop:
 	sbc #15
 	bcs DivideLoop
@@ -83,26 +80,29 @@ DivideLoop:
 	ldx #192
 
 Scanline:
-	txa
-	sec
-	sbc P0YPos
-	cmp P0Height
-	bcc LoadBitmap
-	lda #0
-
-LoadBitmap:
-	tay
-	lda P0Bitmap,Y
-	sta GRP0
-
-	lda P0Color,Y
-	sta COLUP0
-
-	sta WSYNC
 	
-	dex
-	bne Scanline
-	
+        REPEAT 160
+        sta WSYNC  ;160 empty scanlines
+        REPEND
+
+        ldy #17
+
+DrawBitmap:
+    lda P0Bitmap,Y
+    sta GRP0      
+
+    lda P0Color,Y  
+    sta COLUP0    
+
+    sta WSYNC      
+
+    dey
+    bne DrawBitmap 
+
+    lda #0
+    sta GRP0       
+
+        
 	;; VBLANK overscan
 
 	lda #2
@@ -120,14 +120,14 @@ CheckP0Up:
 	bit SWCHA
 	bne CheckP0Down
 
-	inc P0YPos
+	inc P0XPos
 	
 CheckP0Down:
 	lda #%00100000
 	bit SWCHA
 	bne CheckP0Left
 
-	dec P0YPos
+	dec P0XPos
 	
 CheckP0Left:
 	lda #%01000000
