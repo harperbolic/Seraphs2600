@@ -19,7 +19,7 @@ P0XPos	byte
 Reset:
 	CLEAN_START
 
-	ldx #$80
+	ldx #$00
 	stx COLUBK
 	
 	;; init vars
@@ -152,8 +152,7 @@ NullInput:
 	;; player numberarray
 	org $FFE7
 P0Bitmap:
-	.byte #%00000000
-	.byte #%01111110	;---0----
+	.byte #%01111110	;---00---
 	.byte #%00111110	;---00---
 	.byte #%00111100	;0-0000-0
 	.byte #%00111100	;-000000-
@@ -162,7 +161,8 @@ P0Bitmap:
 	.byte #%01111110	;--0000--
 	.byte #%10111101	;--0000--
 	.byte #%00011000	;--00000-
-	.byte #%00100000	;-000000-
+	.byte #%00011000	;-000000-
+	.byte #%00010000
 
 P0Color:
 	.byte #0
