@@ -9,8 +9,7 @@
 
 	seg.u var
 	org $80
-	P0XPos	byte
-	
+P0XPos	byte
 	
 
 	;; init ROM at $F000
