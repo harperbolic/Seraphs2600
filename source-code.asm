@@ -88,19 +88,19 @@ Scanline:
         ldy #17
 
 DrawBitmap:
-    lda P0Bitmap,Y
-    sta GRP0      
+	lda P0Bitmap,Y
+	sta GRP0      
 
-    lda P0Color,Y  
-    sta COLUP0    
+	lda P0Color,Y  
+	sta COLUP0    
 
-    sta WSYNC      
+	sta WSYNC      
 
-    dey
-    bne DrawBitmap 
+	dey
+	bne DrawBitmap 
 
-    lda #0
-    sta GRP0       
+	lda #0
+	sta GRP0       
 
         
 	;; VBLANK overscan
