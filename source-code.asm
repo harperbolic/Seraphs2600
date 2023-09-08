@@ -1,35 +1,98 @@
- 	processor 6502
+; Seraph's 2600
+; 2023 Furigam 
+; Designer: Harperbolic
 
-	;; include alias
+; Original Game by SadSocket
+
+
 	
+	processor 6502	
 	include "vcs.h"
 	include "macro.h"
 
-;; var $80 - $FF
+;===============================================================================
+; C O N S T A N T S
+;===============================================================================
 
+; LFSR seed initial value 
+RAND_SEED	= $c4
+
+; Colors
+BLACK		= $00
+WHITE		= $0F
+PURPLE		= $15
+RED		= $04
+
+; Y-axis
+P0_HEIGHT	= 9	
+P1_HEIGHT	= 9
+
+;===============================================================================
+; V A R I A B L E S
+;===============================================================================
+	
 	seg.u var
 	org $80
-P0XPos	byte
+
+; X-axis
+P0XPos	    	byte
+P0YPos		byte
+P1XPos		byte
+P1YPos		byte
+P0SpritePtr	word
+P0ColorPtr	word
+P1SpritePtr	word
+P1ColorPtr	word
+
+;===============================================================================
+; R O M - I N I T
+;===============================================================================
 	
 
-	;; init ROM at $F000
-
-	seg code
-	org $F000
+	seg   code
+	org   $F000
 Reset:
 	CLEAN_START
 
-	ldx #$00
-	stx COLUBK
-	
-	;; init vars
-
 	lda #10
+	sta P0YPos
+	lda 60
 	sta P0XPos
+
+	lda   #83
+	sta   P1XPos
+	lda   #53
+	sta   P1YPos
+
+
+
+	lda   #<P0Sprite
+	sta   P0SpritePtr
+	lda   #>P0Sprite
+	sta   P0SpritePtr+1
+
+	lda   #<P0Color
+	sta   P0ColorPtr
+	lda   #>P0Sprite
+	sta   P0ColorPtr+1
+
+	lda   #<P1Sprite
+	sta   P1SpritePtr
+	lda   #>P1Sprite
+	sta   P1SpritePtr+1
+
+	lda   #<P1Color
+	sta   P1ColorPtr
+	lda   #>P1Color
+	sta   P1ColorPtr+1
 	
-	;; enable VBLANK and VSYNC
+	;; Init frame
 
 StartFrame:
+	;; Pre Vblank Subroutines
+
+	
+	
 	lda #2
 	sta VBLANK
 	sta VSYNC
