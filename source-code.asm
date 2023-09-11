@@ -24,8 +24,8 @@ PURPLE		= $15
 RED		= $04
 
 ; Y-axis
-P0_HEIGHT	= 9	
-P1_HEIGHT	= 9
+P0_HEIGHT	= 11	
+P1_HEIGHT	= 10
 
 ;===============================================================================
 ; V A R I A B L E S
@@ -39,6 +39,7 @@ P0XPos	    	byte
 P0YPos		byte
 P1XPos		byte
 P1YPos		byte
+; Pointers
 P0SpritePtr	word
 P0ColorPtr	word
 P1SpritePtr	word
@@ -54,10 +55,10 @@ P1ColorPtr	word
 Reset:
 	CLEAN_START
 
-	lda #10
-	sta P0YPos
-	lda 60
-	sta P0XPos
+	lda   #10
+	sta   P0YPos
+	lda   60
+	sta   P0XPos
 
 	lda   #83
 	sta   P1XPos
@@ -93,25 +94,25 @@ Reset:
 StartFrame:
 	;; Pre Vblank Subroutines
 
-	lda   P0YPos
+	lda   P0XPos
 	ldy   #0
 	jsr   SetObjectXPos
 
-	lda   P1YPos
+	lda   P1XPos
 	ldy   #1
 	jsr   SetObjectXPos
 
 	sta   WSYNC
-	sta HMOVE
+	sta   HMOVE
 
 	;; VSYNC-VBLANK
 
 	lda   #2
 	sta   VBLANK
 	sta   VSYNC
+	REPEAT 3
 	sta   WSYNC
-	sta   WSYNC
-	sta   WSYNC
+	REPEND
 
 	lda   #0
 	sta   VSYNC
@@ -123,21 +124,23 @@ StartFrame:
 	;; Visible scanlines
 VisibleLines:
 	;; PF and BK settings
-	lda   #$FF
+	lda   BLACK
 	sta   COLUBK
 
-	lda   #0
+	lda   WHITE
 	sta   COLUPF
 
 	lda   #%00000001
 	sta   CTRLPF
 
-	lda   #$F0
+	lda   #$0
 	sta   PF0
-	lda   #$FC
+	lda   #$0
 	sta   PF1
-	lda   #0
+	lda   #
 	sta   PF2
+        
+        ldx #96
 .ScanlineLoop:
 .AreWeInsideP0:
 	txa
@@ -152,12 +155,12 @@ VisibleLines:
 	sta   WSYNC
 	sta   GRP0
 	lda   (P0ColorPtr),Y
-	sta COLUP0
+	sta   COLUP0
 .AreWeInsideP1:
-	tax
+	txa
 	sec
-	sbc   P0YPos
-	cmp   P0_HEIGHT
+	sbc   P1YPos
+	cmp   P1_HEIGHT
 	bcc   .DrawP1
 	lda   #0
 .DrawP1:
@@ -177,34 +180,34 @@ VisibleLines:
 	REPEAT 30
 		sta WSYNC
 	REPEND
-	lda #0
+	lda   #0
 	sta VBLANK
 
-	;; joystick inputs tests
+	;; P0 input
 
 CheckP0Up:
-	lda #%00010000
-	bit SWCHA
-	bne CheckP0Down
+	lda   #%00010000
+	bit   SWCHA
+	bne   CheckP0Down
 	
 CheckP0Down:
-	lda #%00100000
-	bit SWCHA
-	bne CheckP0Left
+	lda   #%00100000
+	bit   SWCHA
+	bne   CheckP0Left
 	
 CheckP0Left:
-	lda #%01000000
-	bit SWCHA
-	bne CheckP0Right
+	lda   #%01000000
+	bit   SWCHA
+	bne   CheckP0Right
 
 	dec P0XPos
 	
 CheckP0Right:
-	lda #%10000000
-	bit SWCHA
-	bne NullInput
+	lda   #%10000000
+	bit   SWCHA
+	bne   NullInput
 
-	inc P0XPos
+	inc   P0XPos
 	
 NullInput:
 	
@@ -234,19 +237,20 @@ SetObjectXPos subroutine
 ; L O O K U P - T A B L E S
 ;===============================================================================
 P0Sprite:
-	.byte #%01111110	;---00---
-	.byte #%00111110	;---00---
-	.byte #%00111100	;0-0000-0
-	.byte #%00111100	;-000000-
-	.byte #%00111100	;---00---
-	.byte #%00011000	;--0000--
-	.byte #%01111110	;--0000--
-	.byte #%10111101	;--0000--
-	.byte #%00011000	;--00000-
-	.byte #%00011000	;-000000-
-	.byte #%00010000
+	.byte #%00000000
+        .byte #%11111111
+        .byte #%10000001
+        .byte #%01000010
+        .byte #%01000010
+        .byte #%00100100
+        .byte #%11111111
+        .byte #%00100100
+        .byte #%00011000
+        .byte #%01010000
+        .byte #%00100000
 
 P1Sprite:
+	.byte #%00000000
 	.byte #%01000010
 	.byte #%10011001
 	.byte #%10011001
@@ -258,28 +262,32 @@ P1Sprite:
 	.byte #%01111110
 	
 P0Color:
-	.byte #0
-	.byte #0
-	.byte #0
-	.byte #0
-	.byte #0
-	.byte #0
-	.byte #0
-	.byte #0
-	.byte #0
-	.byte #0
+	.byte WHITE
+	.byte WHITE
+	.byte WHITE
+	.byte WHITE
+	.byte WHITE
+	.byte WHITE
+	.byte WHITE
+	.byte WHITE
+	.byte WHITE
+	.byte WHITE
+	.byte WHITE
+    	.byte WHITE
+
+
 
 P1Color:
-	.byte #0
-	.byte #0
-	.byte #0
-	.byte #0
-	.byte #0
-	.byte #0
-	.byte #0
-	.byte #0
-	.byte #0
-
+	.byte WHITE
+	.byte WHITE
+	.byte WHITE
+	.byte WHITE
+	.byte WHITE
+	.byte WHITE
+	.byte WHITE
+	.byte WHITE
+	.byte WHITE
+	.byte WHITE
 
 	
 	org $FFFC
