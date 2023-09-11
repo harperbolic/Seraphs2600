@@ -86,94 +86,98 @@ Reset:
 	lda   #>P1Color
 	sta   P1ColorPtr+1
 	
-	;; Init frame
+;===============================================================================
+; S T A R T - F R A M E
+;===============================================================================
 
 StartFrame:
 	;; Pre Vblank Subroutines
 
-	
-	
-	lda #2
-	sta VBLANK
-	sta VSYNC
+	lda   P0YPos
+	ldy   #0
+	jsr   SetObjectXPos
 
-	;; VSYNC
+	lda   P1YPos
+	ldy   #1
+	jsr   SetObjectXPos
 
-	REPEAT 3
-		sta WSYNC 
-	REPEND
-	lda #0
-	sta VSYNC
-	
-	;; Set P0XPos
-
-	lda P0XPos
-	and #$7F
-
-	sta WSYNC
-	sta HMCLR
-	
-	sec
-
-DivideLoop:
-	sbc #15
-	bcs DivideLoop
-
-	eor #7
-	asl
-	asl
-	asl
-	asl
-	sta HMP0
-	sta RESP0	
-	sta WSYNC
+	sta   WSYNC
 	sta HMOVE
 
-	;; VBLANK
-	
-	REPEAT 35
-		sta WSYNC
+	;; VSYNC-VBLANK
+
+	lda   #2
+	sta   VBLANK
+	sta   VSYNC
+	sta   WSYNC
+	sta   WSYNC
+	sta   WSYNC
+
+	lda   #0
+	sta   VSYNC
+	REPEAT 37
+	sta WSYNC
 	REPEND
-
-	lda #0
 	sta VBLANK
 	
-	;; visible scanlines
+	;; Visible scanlines
+VisibleLines:
+	;; PF and BK settings
+	lda   #$FF
+	sta   COLUBK
 
-	ldx #192
+	lda   #0
+	sta   COLUPF
 
-Scanline:
-	
-        REPEAT 160
-        sta WSYNC  ;160 empty scanlines
-        REPEND
+	lda   #%00000001
+	sta   CTRLPF
 
-        ldy #17
+	lda   #$F0
+	sta   PF0
+	lda   #$FC
+	sta   PF1
+	lda   #0
+	sta   PF2
+.ScanlineLoop:
+.AreWeInsideP0:
+	txa
+	sec
+	sbc   P0YPos
+	cmp   P0_HEIGHT
+	bcc   .DrawP0
+	lda   #0
+.DrawP0:
+	tay
+	lda   (P0SpritePtr),Y
+	sta   WSYNC
+	sta   GRP0
+	lda   (P0ColorPtr),Y
+	sta COLUP0
+.AreWeInsideP1:
+	tax
+	sec
+	sbc   P0YPos
+	cmp   P0_HEIGHT
+	bcc   .DrawP1
+	lda   #0
+.DrawP1:
+	tay
+	lda   (P1SpritePtr),Y
+	sta   WSYNC
+	sta   GRP1
+	lda   (P1ColorPtr),Y
+	sta   COLUP1
 
-DrawBitmap:
-	lda P0Bitmap,Y
-	sta GRP0      
+	dex
+	bne   .ScanlineLoop
 
-	lda P0Color,Y  
-	sta COLUP0    
-
-	sta WSYNC      
-
-	dey
-	bne DrawBitmap 
-
-	lda #0
-	sta GRP0       
-
-        
-	;; VBLANK overscan
-
-	lda #2
-	sta VBLANK
+	;; overscan
+	lda   #2
+	sta   VBLANK
 	REPEAT 30
 		sta WSYNC
 	REPEND
-	LDA #0
+	lda #0
 	sta VBLANK
 
 	;; joystick inputs tests
@@ -182,15 +186,11 @@ CheckP0Up:
 	lda #%00010000
 	bit SWCHA
 	bne CheckP0Down
-
-	inc P0XPos
 	
 CheckP0Down:
 	lda #%00100000
 	bit SWCHA
 	bne CheckP0Left
-
-	dec P0XPos
 	
 CheckP0Left:
 	lda #%01000000
@@ -212,9 +212,28 @@ NullInput:
 	
 	jmp StartFrame
 
-	;; player numberarray
-	org $FFE7
-P0Bitmap:
+;===============================================================================
+; S U B R O U T I N E S
+;===============================================================================
+SetObjectXPos subroutine
+	sta   WSYNC
+	sec
+.Div15Loop:
+	sbc   #15
+	bcs   .Div15Loop
+	eor   #7
+	asl
+	asl
+	asl
+	asl
+	sta   HMP0,Y
+	sta   RESP0,Y
+	rts
+	
+;===============================================================================
+; L O O K U P - T A B L E S
+;===============================================================================
+P0Sprite:
 	.byte #%01111110	;---00---
 	.byte #%00111110	;---00---
 	.byte #%00111100	;0-0000-0
@@ -227,6 +246,17 @@ P0Bitmap:
 	.byte #%00011000	;-000000-
 	.byte #%00010000
 
+P1Sprite:
+	.byte #%01000010
+	.byte #%10011001
+	.byte #%10011001
+	.byte #%01100110
+	.byte #%00111100
+	.byte #%00100100
+	.byte #%00011000
+	.byte #%00100100
+	.byte #%01111110
+	
 P0Color:
 	.byte #0
 	.byte #0
@@ -238,6 +268,19 @@ P0Color:
 	.byte #0
 	.byte #0
 	.byte #0
+
+P1Color:
+	.byte #0
+	.byte #0
+	.byte #0
+	.byte #0
+	.byte #0
+	.byte #0
+	.byte #0
+	.byte #0
+	.byte #0
+
+
 	
 	org $FFFC
 	.word Reset
