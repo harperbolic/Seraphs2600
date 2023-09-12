@@ -181,7 +181,7 @@ VisibleLines:
 		sta WSYNC
 	REPEND
 	lda   #0
-	sta VBLANK
+	sta   VBLANK
 
 	;; P0 input
 
@@ -200,7 +200,7 @@ CheckP0Left:
 	bit   SWCHA
 	bne   CheckP0Right
 
-	dec P0XPos
+	dec   P0XPos
 	
 CheckP0Right:
 	lda   #%10000000
@@ -213,7 +213,7 @@ NullInput:
 	
 	;; New frame
 	
-	jmp StartFrame
+	jmp   StartFrame
 
 ;===============================================================================
 ; S U B R O U T I N E S
