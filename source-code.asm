@@ -57,7 +57,7 @@ Reset:
 
 	lda   #10
 	sta   P0YPos
-	lda   60
+	lda   #60
 	sta   P0XPos
 
 	lda   #83
@@ -135,7 +135,7 @@ VisibleLines:
 
 	lda   #$0
 	sta   PF0
-	lda   #$0
+	lda   #%0000
 	sta   PF1
 	lda   #
 	sta   PF2
